@@ -1,0 +1,26 @@
+{
+  "topics": [
+    {
+      "id": 1,
+      "title": "Pisound setup guide",
+      "slug": "pisound-setup-guide",
+      "category_id": 5,
+      "created_at": "2026-02-15T08:00:00Z"
+    },
+    {
+      "id": 2,
+      "title": "MIDI routing with Pisound",
+      "slug": "midi-routing-with-pisound",
+      "category_id": 5,
+      "created_at": "2026-02-18T14:00:00Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": 10,
+      "topic_id": 1,
+      "username": "admin",
+      "blurb": "This guide covers the initial setup..."
+    }
+  ]
+}

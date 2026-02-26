@@ -1,0 +1,72 @@
+{
+  "id": "discourse",
+  "name": "Discourse Forum",
+  "description": "Discourse forum integration — read, search, filter topics and posts, manage user content, and create/update topics via agent tools.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "siteUrl": {
+        "type": "string",
+        "description": "Discourse forum base URL (e.g. https://meta.discourse.org)"
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "Discourse API key. Required for write tools and private categories. Read tools work without it on public forums."
+      },
+      "apiUsername": {
+        "type": "string",
+        "description": "Discourse API username (default: 'system'). Used with apiKey for authenticated requests."
+      },
+      "staffUsernames": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Usernames to treat as staff when checking for unanswered topics."
+      },
+      "categories": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Category slugs to scope tools to. Leave empty for all categories."
+      },
+      "allowWrites": {
+        "type": "boolean",
+        "description": "Enable write tools (create_post, create_topic, update_topic). Requires apiKey. Default: false."
+      },
+      "requestTimeoutMs": {
+        "type": "number",
+        "description": "HTTP request timeout in milliseconds (default: 15000)"
+      }
+    },
+    "required": ["siteUrl"]
+  },
+  "uiHints": {
+    "siteUrl": {
+      "label": "Forum URL",
+      "placeholder": "https://community.example.com"
+    },
+    "apiKey": {
+      "label": "API Key",
+      "sensitive": true
+    },
+    "apiUsername": {
+      "label": "API Username",
+      "placeholder": "system"
+    },
+    "staffUsernames": {
+      "label": "Staff Usernames",
+      "help": "Topics answered by these users are considered resolved in the unanswered tool"
+    },
+    "categories": {
+      "label": "Category Scope",
+      "help": "Restrict tools to these category slugs. Leave empty for all."
+    },
+    "allowWrites": {
+      "label": "Enable Write Tools",
+      "help": "Allow create_post, create_topic, and update_topic. Requires an API key."
+    },
+    "requestTimeoutMs": {
+      "label": "Request Timeout (ms)",
+      "placeholder": "15000"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "topic_list": {
+    "topics": [
+      {
+        "id": 10,
+        "title": "New unanswered topic",
+        "slug": "new-unanswered-topic",
+        "category_id": 5,
+        "created_at": "2026-02-26T08:00:00Z",
+        "posts_count": 1
+      },
+      {
+        "id": 11,
+        "title": "Answered topic",
+        "slug": "answered-topic",
+        "category_id": 5,
+        "created_at": "2026-02-26T09:00:00Z",
+        "posts_count": 2
+      },
+      {
+        "id": 12,
+        "title": "Old topic",
+        "slug": "old-topic",
+        "category_id": 5,
+        "created_at": "2026-01-01T08:00:00Z",
+        "posts_count": 1
+      }
+    ]
+  }
+}

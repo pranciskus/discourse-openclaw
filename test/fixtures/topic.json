@@ -1,0 +1,36 @@
+{
+  "title": "How to configure Pisound",
+  "category_id": 5,
+  "tags": ["pisound", "setup"],
+  "created_at": "2026-02-20T10:00:00Z",
+  "views": 42,
+  "posts_count": 3,
+  "post_stream": {
+    "posts": [
+      {
+        "id": 100,
+        "username": "alice",
+        "created_at": "2026-02-20T10:00:00Z",
+        "cooked": "<p>How do I configure Pisound on Raspberry Pi?</p>",
+        "raw": "How do I configure Pisound on Raspberry Pi?",
+        "post_number": 1
+      },
+      {
+        "id": 101,
+        "username": "bob",
+        "created_at": "2026-02-20T11:00:00Z",
+        "cooked": "<p>Check the docs at pisound.blokas.io</p>",
+        "raw": "Check the docs at pisound.blokas.io",
+        "post_number": 2
+      },
+      {
+        "id": 102,
+        "username": "alice",
+        "created_at": "2026-02-20T12:00:00Z",
+        "cooked": "<p>Thanks!</p>",
+        "raw": "Thanks!",
+        "post_number": 3
+      }
+    ]
+  }
+}
