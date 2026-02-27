@@ -36,8 +36,7 @@
         "type": "number",
         "description": "HTTP request timeout in milliseconds (default: 15000)"
       }
-    },
-    "required": ["siteUrl"]
+    }
   },
   "uiHints": {
     "siteUrl": {

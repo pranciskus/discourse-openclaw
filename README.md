@@ -20,7 +20,20 @@ openclaw plugins install github:pranciskus/discourse-openclaw
 
 ## Configuration
 
-Add to your `openclaw.json`:
+After installing, configure the plugin with your forum URL:
+
+```bash
+openclaw config set plugins.entries.discourse.config.siteUrl "https://meta.discourse.org"
+```
+
+For authenticated access (private categories, write tools):
+
+```bash
+openclaw config set plugins.entries.discourse.config.apiKey "your-discourse-api-key"
+openclaw config set plugins.entries.discourse.config.allowWrites true
+```
+
+Or edit `openclaw.json` directly:
 
 ### Minimal (read-only, public forum)
 
@@ -29,7 +42,6 @@ Add to your `openclaw.json`:
   "plugins": {
     "entries": {
       "discourse": {
-        "enabled": true,
         "config": {
           "siteUrl": "https://meta.discourse.org"
         }
@@ -46,7 +58,6 @@ Add to your `openclaw.json`:
   "plugins": {
     "entries": {
       "discourse": {
-        "enabled": true,
         "config": {
           "siteUrl": "https://community.example.com",
           "apiKey": "your-discourse-api-key",
