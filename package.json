@@ -1,6 +1,6 @@
 {
   "name": "openclaw-discourse",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "OpenClaw plugin for Discourse forum integration — read, search, filter, and write topics/posts via agent tools",
   "type": "module",
   "license": "MIT",

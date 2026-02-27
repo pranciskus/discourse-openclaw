@@ -1,5 +1,5 @@
 {
-  "id": "discourse",
+  "id": "openclaw-discourse",
   "name": "Discourse Forum",
   "description": "Discourse forum integration — read, search, filter topics and posts, manage user content, and create/update topics via agent tools.",
   "configSchema": {
