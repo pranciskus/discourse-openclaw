@@ -25,9 +25,7 @@
       "defaultChoice": "npm"
     }
   },
-  "dependencies": {
-    "zod": "^3.23.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "vitest": "^3.0.0",
     "typescript": "^5.7.0",

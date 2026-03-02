@@ -1,6 +1,6 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
 
 export function registerGetCategories(
   api: PluginApi,
@@ -14,7 +14,7 @@ export function registerGetCategories(
       type: "object" as const,
       properties: {},
     },
-    async execute() {
+    async execute(_id: string, _params: Record<string, unknown>) {
       try {
         const data = await client.get<Record<string, unknown>>(
           "/categories.json",
@@ -35,7 +35,7 @@ export function registerGetCategories(
         }));
         return toolResult(categories);
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

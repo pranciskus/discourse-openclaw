@@ -1,6 +1,12 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import {
+  positiveInt,
+  optionalString,
+  optionalPositiveInt,
+  optionalStringArray,
+} from "../validate.js";
 
 export function registerUpdateTopic(
   api: PluginApi,
@@ -37,11 +43,17 @@ export function registerUpdateTopic(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const topicId = params.topic_id as number;
+        const topicId = positiveInt(params.topic_id, "topic_id");
         const body: Record<string, unknown> = {};
-        if (params.title != null) body.title = params.title;
-        if (params.category_id != null) body.category_id = params.category_id;
-        if (params.tags != null) body.tags = params.tags;
+        const title = optionalString(params.title);
+        if (title != null) body.title = title;
+        const categoryId = optionalPositiveInt(
+          params.category_id,
+          "category_id",
+        );
+        if (categoryId != null) body.category_id = categoryId;
+        const tags = optionalStringArray(params.tags, "tags");
+        if (tags != null) body.tags = tags;
 
         if (Object.keys(body).length === 0) {
           return toolError(
@@ -61,7 +73,7 @@ export function registerUpdateTopic(
           category_id: basic?.category_id,
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

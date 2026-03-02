@@ -1,6 +1,7 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import { positiveInt } from "../validate.js";
 
 export function registerReadPost(
   api: PluginApi,
@@ -19,7 +20,7 @@ export function registerReadPost(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const postId = params.post_id as number;
+        const postId = positiveInt(params.post_id, "post_id");
         const data = await client.get<Record<string, unknown>>(
           `/posts/${postId}.json`,
         );
@@ -31,13 +32,12 @@ export function registerReadPost(
           username: data.username,
           name: data.name,
           created_at: data.created_at,
-          cooked: data.cooked,
           raw: data.raw,
           reply_count: data.reply_count,
           like_count: data.like_count,
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

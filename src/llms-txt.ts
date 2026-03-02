@@ -11,6 +11,8 @@ export interface LlmsPolicy {
   text: string;
   /** Whether llms.txt was found on the site. */
   found: boolean;
+  /** Whether the fetch failed due to a network/server error (not a 404). */
+  error?: boolean;
 }
 
 /** Fetch /llms.txt from the given site URL. Never throws. */
@@ -26,20 +28,23 @@ export async function fetchLlmsTxt(
     const res = await fetch(url, {
       headers: {
         Accept: "text/plain",
-        "User-Agent": "openclaw-discourse/0.1",
+        "User-Agent": "openclaw-discourse/0.2",
       },
       signal: controller.signal,
     });
 
-    if (!res.ok) {
+    if (res.status === 404) {
       return { text: "", found: false };
+    }
+    if (!res.ok) {
+      return { text: "", found: false, error: true };
     }
 
     const text = (await res.text()).trim();
     if (!text) return { text: "", found: false };
     return { text, found: true };
   } catch {
-    return { text: "", found: false };
+    return { text: "", found: false, error: true };
   } finally {
     clearTimeout(timeout);
   }

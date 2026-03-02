@@ -5,6 +5,7 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
+    "required": ["siteUrl"],
     "properties": {
       "siteUrl": {
         "type": "string",

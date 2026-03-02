@@ -1,6 +1,25 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import {
+  optionalString,
+  enumValue,
+  optionalNonNegativeInt,
+  optionalPositiveInt,
+} from "../validate.js";
+
+const ORDERS = [
+  "default",
+  "latest",
+  "created",
+  "activity",
+  "views",
+  "posts",
+  "category",
+  "likes",
+  "op_likes",
+  "posters",
+] as const;
 
 export function registerFilterTopics(
   api: PluginApi,
@@ -21,7 +40,7 @@ export function registerFilterTopics(
         order: {
           type: "string",
           description:
-            "Sort order: latest, created, activity (default: latest)",
+            "Sort order: default, latest, created, activity, views, posts, category, likes, op_likes, posters (default: latest)",
         },
         max_results: {
           type: "number",
@@ -35,23 +54,32 @@ export function registerFilterTopics(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const cat = params.category_slug as string | undefined;
-        const order = (params.order as string) ?? "latest";
-        const page = (params.page as number) ?? 0;
+        const cat = optionalString(params.category_slug);
+        const order = enumValue(params.order, ORDERS, "order", "latest");
+        const page = optionalNonNegativeInt(params.page, "page") ?? 0;
+        const maxResults =
+          optionalPositiveInt(params.max_results, "max_results") ?? 20;
         const path = cat
-          ? `/c/${cat}.json?order=${order}&page=${page}`
+          ? `/c/${encodeURIComponent(cat)}.json?order=${order}&page=${page}`
           : `/latest.json?order=${order}&page=${page}`;
         const data = await client.get<Record<string, unknown>>(path);
         const topicList = data.topic_list as
           | { topics?: Array<Record<string, unknown>> }
           | undefined;
-        const topics = (topicList?.topics ?? []).slice(
-          0,
-          (params.max_results as number) ?? 20,
+        const topics = (topicList?.topics ?? []).slice(0, maxResults).map(
+          (t) => ({
+            id: t.id,
+            title: t.title,
+            slug: t.slug,
+            category_id: t.category_id,
+            created_at: t.created_at,
+            posts_count: t.posts_count,
+            views: t.views,
+          }),
         );
         return toolResult(topics);
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

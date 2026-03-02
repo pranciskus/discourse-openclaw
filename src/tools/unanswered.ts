@@ -1,6 +1,7 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import { optionalString, optionalPositiveInt } from "../validate.js";
 
 export function registerUnanswered(
   api: PluginApi,
@@ -30,21 +31,19 @@ export function registerUnanswered(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const hours = (params.hours as number) ?? 24;
-        const cat = params.category_slug as string | undefined;
-        const maxResults = (params.max_results as number) ?? 10;
-        const cutoff = new Date(
-          Date.now() - hours * 3_600_000,
-        ).toISOString();
+        const hours = optionalPositiveInt(params.hours, "hours") ?? 24;
+        const cat = optionalString(params.category_slug);
+        const maxResults = optionalPositiveInt(params.max_results, "max_results") ?? 10;
+        const cutoff = new Date(Date.now() - hours * 3_600_000);
         const path = cat
-          ? `/c/${cat}.json?order=created`
+          ? `/c/${encodeURIComponent(cat)}.json?order=created`
           : `/latest.json?order=created`;
         const data = await client.get<Record<string, unknown>>(path);
         const topicList = data.topic_list as
           | { topics?: Array<Record<string, unknown>> }
           | undefined;
         const topics = (topicList?.topics ?? []).filter(
-          (t) => (t.created_at as string) >= cutoff,
+          (t) => new Date(t.created_at as string) >= cutoff,
         );
 
         const staff = new Set(cfg.staffUsernames);
@@ -80,7 +79,7 @@ export function registerUnanswered(
 
         return toolResult(unanswered);
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

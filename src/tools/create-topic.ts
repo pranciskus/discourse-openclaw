@@ -1,6 +1,11 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import {
+  nonEmptyString,
+  optionalPositiveInt,
+  optionalStringArray,
+} from "../validate.js";
 
 export function registerCreateTopic(
   api: PluginApi,
@@ -37,13 +42,17 @@ export function registerCreateTopic(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const raw = `${params.raw}\n\n---\n${cfg.signature}`;
-        const body: Record<string, unknown> = {
-          title: params.title,
-          raw,
-        };
-        if (params.category_id != null) body.category = params.category_id;
-        if (params.tags != null) body.tags = params.tags;
+        const title = nonEmptyString(params.title, "title");
+        const rawContent = nonEmptyString(params.raw, "raw");
+        const raw = `${rawContent}\n\n---\n${cfg.signature}`;
+        const body: Record<string, unknown> = { title, raw };
+        const categoryId = optionalPositiveInt(
+          params.category_id,
+          "category_id",
+        );
+        if (categoryId != null) body.category = categoryId;
+        const tags = optionalStringArray(params.tags, "tags");
+        if (tags != null) body.tags = tags;
 
         const data = await client.post<Record<string, unknown>>(
           "/posts.json",
@@ -55,7 +64,7 @@ export function registerCreateTopic(
           topic_slug: data.topic_slug,
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

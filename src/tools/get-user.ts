@@ -1,6 +1,7 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import { nonEmptyString } from "../validate.js";
 
 export function registerGetUser(
   api: PluginApi,
@@ -22,7 +23,7 @@ export function registerGetUser(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const username = params.username as string;
+        const username = nonEmptyString(params.username, "username");
         const data = await client.get<Record<string, unknown>>(
           `/u/${encodeURIComponent(username)}.json`,
         );
@@ -42,7 +43,7 @@ export function registerGetUser(
             : undefined,
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });
