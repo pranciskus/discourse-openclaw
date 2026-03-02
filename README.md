@@ -65,6 +65,7 @@ Or edit `openclaw.json` directly:
           "staffUsernames": ["admin", "moderator1"],
           "categories": ["support", "general"],
           "allowWrites": true,
+          "signature": "*This content was written by AI.*",
           "requestTimeoutMs": 15000
         }
       }
@@ -83,6 +84,7 @@ Or edit `openclaw.json` directly:
 | `staffUsernames` | string[] | No | `[]` | Usernames treated as staff in `discourse_unanswered` |
 | `categories` | string[] | No | `[]` | Category slugs to scope monitoring (empty = all) |
 | `allowWrites` | boolean | No | `false` | Enable write tools. Requires `apiKey` |
+| `signature` | string | No | `*This content was written by AI.*` | Appended to all AI-generated posts and topics |
 | `requestTimeoutMs` | number | No | `15000` | HTTP request timeout in ms |
 
 ## Tools
@@ -100,6 +102,7 @@ Or edit `openclaw.json` directly:
 | `discourse_list_user_posts` | List a user's recent posts | `username`, `offset`, `limit` |
 | `discourse_get_categories` | List all forum categories | — |
 | `discourse_get_tags` | List all tags with counts | — |
+| `discourse_site_rules` | Fetch the site's AI usage policy (`/llms.txt`) | — |
 
 ### Write Tools (require `apiKey` + `allowWrites: true`)
 
@@ -110,6 +113,16 @@ Or edit `openclaw.json` directly:
 | `discourse_update_topic` | Update topic title/category/tags | `topic_id`, `title`, `category_id`, `tags` |
 
 Write tools are rate-limited to ~1 request/second.
+
+### llms.txt Policy Support
+
+The plugin respects the [llms.txt](https://llmstxt.org/) convention. The `discourse_site_rules` tool fetches `/llms.txt` from the forum on demand and returns the site's AI usage policy. All write tool descriptions instruct the LLM to call `discourse_site_rules` first and follow the rules before posting.
+
+The result is cached so `/llms.txt` is only fetched once per session.
+
+### AI Content Signature
+
+All AI-generated posts and topics automatically include a signature (configurable via the `signature` config field). This ensures AI content is clearly labeled. The signature is appended programmatically — the LLM cannot skip it.
 
 ## Getting a Discourse API Key
 
