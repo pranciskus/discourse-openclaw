@@ -86,7 +86,7 @@ Or edit `openclaw.json` directly:
 |--------|------|----------|---------|-------------|
 | `siteUrl` | string | Yes | — | Discourse forum base URL |
 | `apiKey` | string | No | — | API key for auth. Required for write tools and private categories |
-| `apiUsername` | string | No | `"system"` | API username for authenticated requests |
+| `apiUsername` | string | No | `"system"` | Discourse user to act as when using a global API key. Posts and actions will appear under this username. |
 | `staffUsernames` | string[] | No | `[]` | Usernames treated as staff in `discourse_unanswered` |
 | `categories` | string[] | No | `[]` | Category slugs to scope monitoring (empty = all) |
 | `allowWrites` | boolean | No | `false` | Enable write tools. Requires `apiKey` |
@@ -124,11 +124,11 @@ Write tools are rate-limited to ~1 request/second.
 
 The plugin respects the [llms.txt](https://llmstxt.org/) convention. The `discourse_site_rules` tool fetches `/llms.txt` from the forum on demand and returns the site's AI usage policy. All write tool descriptions instruct the LLM to call `discourse_site_rules` first and follow the rules before posting.
 
-The result is cached so `/llms.txt` is only fetched once per session.
+The result is cached for 24 hours. If the fetch fails due to a network error, the LLM is told to proceed with caution rather than assuming no restrictions.
 
 ### AI Content Signature
 
-All AI-generated posts and topics automatically include a signature (configurable via the `signature` config field). This ensures AI content is clearly labeled. The signature is appended programmatically — the LLM cannot skip it.
+All AI-generated posts and topics automatically include a signature separated by a horizontal rule (`---`). This applies to `create_post` and `create_topic` only — `update_topic` changes metadata (title/category/tags), not body content. The signature text is configurable via the `signature` config field and is appended programmatically — the LLM cannot skip it.
 
 ## Getting a Discourse API Key
 
@@ -144,7 +144,7 @@ All AI-generated posts and topics automatically include a signature (configurabl
 | Feature | discourse-openclaw | discourse-mcp |
 |---------|-------------------|---------------|
 | Platform | OpenClaw native | MCP (Claude Desktop, etc.) |
-| Read tools | 9 | 10 |
+| Read tools | 10 | 10 |
 | Write tools | 3 (focused) | 9 (full admin) |
 | Unique tools | `discourse_unanswered` | Chat, drafts, admin tools |
 | Install | `openclaw plugins install` | Standalone CLI |
