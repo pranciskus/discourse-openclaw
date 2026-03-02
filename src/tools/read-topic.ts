@@ -1,6 +1,7 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import { positiveInt, optionalPositiveInt } from "../validate.js";
 
 export function registerReadTopic(
   api: PluginApi,
@@ -24,8 +25,8 @@ export function registerReadTopic(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const topicId = params.topic_id as number;
-        const limit = (params.post_limit as number) ?? 20;
+        const topicId = positiveInt(params.topic_id, "topic_id");
+        const limit = optionalPositiveInt(params.post_limit, "post_limit") ?? 20;
         const data = await client.get<Record<string, unknown>>(
           `/t/${topicId}.json`,
         );
@@ -44,13 +45,12 @@ export function registerReadTopic(
             id: p.id,
             username: p.username,
             created_at: p.created_at,
-            cooked: p.cooked,
             raw: p.raw,
             post_number: p.post_number,
           })),
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

@@ -1,6 +1,11 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import {
+  nonEmptyString,
+  optionalNonNegativeInt,
+  optionalPositiveInt,
+} from "../validate.js";
 
 export function registerListUserPosts(
   api: PluginApi,
@@ -30,12 +35,15 @@ export function registerListUserPosts(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const username = encodeURIComponent(params.username as string);
-        const offset = (params.offset as number) ?? 0;
-        const limit = Math.min((params.limit as number) ?? 30, 50);
-        // filter=4 is "posts", filter=5 is "replies"
+        const username = nonEmptyString(params.username, "username");
+        const offset =
+          optionalNonNegativeInt(params.offset, "offset") ?? 0;
+        const limit = Math.min(
+          optionalPositiveInt(params.limit, "limit") ?? 30,
+          50,
+        );
         const data = await client.get<Record<string, unknown>>(
-          `/user_actions.json?offset=${offset}&username=${username}&filter=4,5`,
+          `/user_actions.json?offset=${offset}&username=${encodeURIComponent(username)}&filter=4,5`,
         );
         const actions = (
           (data.user_actions as Array<Record<string, unknown>>) ?? []
@@ -53,7 +61,7 @@ export function registerListUserPosts(
           })),
         );
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

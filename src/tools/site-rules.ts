@@ -1,9 +1,12 @@
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { fetchLlmsTxt } from "../llms-txt.js";
+import { fetchLlmsTxt, type LlmsPolicy } from "../llms-txt.js";
 import { toolResult } from "../types.js";
 
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export function registerSiteRules(api: PluginApi, cfg: DiscourseConfig) {
-  let cached: Awaited<ReturnType<typeof fetchLlmsTxt>> | null = null;
+  let cached: LlmsPolicy | null = null;
+  let cachedAt = 0;
 
   api.registerTool({
     name: "discourse_site_rules",
@@ -15,8 +18,21 @@ export function registerSiteRules(api: PluginApi, cfg: DiscourseConfig) {
       properties: {},
     },
     async execute() {
-      if (!cached) {
+      if (!cached || Date.now() - cachedAt > CACHE_TTL_MS) {
         cached = await fetchLlmsTxt(cfg.siteUrl, cfg.requestTimeoutMs);
+        cachedAt = Date.now();
+      }
+
+      if (cached.error) {
+        return toolResult({
+          site: cfg.siteUrl,
+          rules_found: false,
+          error: true,
+          message:
+            "Failed to retrieve site rules (llms.txt). " +
+            "Proceed with caution or retry later. " +
+            "Do NOT assume there are no restrictions.",
+        });
       }
 
       if (!cached.found) {

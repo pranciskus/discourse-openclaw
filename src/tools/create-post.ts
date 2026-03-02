@@ -1,6 +1,7 @@
 import type { DiscourseClient } from "../client.js";
 import type { PluginApi, DiscourseConfig } from "../config.js";
-import { toolResult, toolError } from "../types.js";
+import { toolResult, toolError, errorMessage } from "../types.js";
+import { positiveInt, nonEmptyString } from "../validate.js";
 
 export function registerCreatePost(
   api: PluginApi,
@@ -28,13 +29,12 @@ export function registerCreatePost(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
-        const raw = `${params.raw}\n\n---\n${cfg.signature}`;
+        const topicId = positiveInt(params.topic_id, "topic_id");
+        const rawContent = nonEmptyString(params.raw, "raw");
+        const raw = `${rawContent}\n\n---\n${cfg.signature}`;
         const data = await client.post<Record<string, unknown>>(
           "/posts.json",
-          {
-            topic_id: params.topic_id,
-            raw,
-          },
+          { topic_id: topicId, raw },
         );
         return toolResult({
           id: data.id,
@@ -42,7 +42,7 @@ export function registerCreatePost(
           post_number: data.post_number,
         });
       } catch (err) {
-        return toolError((err as Error).message);
+        return toolError(errorMessage(err));
       }
     },
   });

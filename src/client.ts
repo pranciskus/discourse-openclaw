@@ -22,7 +22,7 @@ export class DiscourseClient {
     this.timeoutMs = cfg.requestTimeoutMs;
     this.headers = {
       Accept: "application/json",
-      "User-Agent": "openclaw-discourse/0.1",
+      "User-Agent": "openclaw-discourse/0.2",
     };
     if (cfg.apiKey) {
       this.headers["Api-Key"] = cfg.apiKey;

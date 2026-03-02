@@ -61,12 +61,23 @@ export interface DiscourseUser {
 /** Helpers for tool return values. */
 export function toolResult(data: unknown) {
   return {
-    content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
+    content: [{ type: "text" as const, text: JSON.stringify(data) }],
   };
 }
 
 export function toolError(message: string) {
   return {
+    isError: true,
     content: [{ type: "text" as const, text: `Error: ${message}` }],
   };
+}
+
+/** Extract a useful error message, preserving DiscourseApiError details. */
+export function errorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    const status = (err as { status?: number }).status;
+    if (status) return `[${status}] ${err.message}`;
+    return err.message;
+  }
+  return String(err);
 }
