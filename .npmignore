@@ -1,0 +1,8 @@
+awesome-ai-tools/
+awesome_ai_agents/
+docs/
+test/
+.github/
+node_modules/
+tsconfig.json
+vitest.config.ts
