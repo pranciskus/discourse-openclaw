@@ -5,6 +5,7 @@ export interface DiscourseConfig {
   staffUsernames: string[];
   categories: string[];
   allowWrites: boolean;
+  signature: string;
   requestTimeoutMs: number;
 }
 
@@ -46,6 +47,9 @@ export function resolveConfig(api: PluginApi): DiscourseConfig {
       ? raw.categories.map(String)
       : [],
     allowWrites: Boolean(raw.allowWrites) && !!apiKey,
+    signature: String(
+      raw.signature ?? "*This content was written by AI.*",
+    ),
     requestTimeoutMs: Number(raw.requestTimeoutMs) || 15_000,
   };
 }

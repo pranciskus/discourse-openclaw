@@ -5,11 +5,13 @@ import { toolResult, toolError } from "../types.js";
 export function registerCreatePost(
   api: PluginApi,
   client: DiscourseClient,
-  _cfg: DiscourseConfig,
+  cfg: DiscourseConfig,
 ) {
   api.registerTool({
     name: "discourse_create_post",
-    description: "Reply to an existing Discourse topic. Requires API key and allowWrites.",
+    description:
+      "Reply to an existing Discourse topic. Requires API key and allowWrites. " +
+      "IMPORTANT: You must call discourse_site_rules first and follow the rules.",
     parameters: {
       type: "object" as const,
       properties: {
@@ -26,11 +28,12 @@ export function registerCreatePost(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
+        const raw = `${params.raw}\n\n---\n${cfg.signature}`;
         const data = await client.post<Record<string, unknown>>(
           "/posts.json",
           {
             topic_id: params.topic_id,
-            raw: params.raw,
+            raw,
           },
         );
         return toolResult({

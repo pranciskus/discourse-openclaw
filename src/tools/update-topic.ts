@@ -10,7 +10,8 @@ export function registerUpdateTopic(
   api.registerTool({
     name: "discourse_update_topic",
     description:
-      "Update a Discourse topic's title, category, or tags. Requires API key and allowWrites.",
+      "Update a Discourse topic's title, category, or tags. Requires API key and allowWrites. " +
+      "IMPORTANT: You must call discourse_site_rules first and follow the rules.",
     parameters: {
       type: "object" as const,
       properties: {

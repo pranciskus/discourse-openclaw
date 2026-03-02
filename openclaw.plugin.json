@@ -32,6 +32,10 @@
         "type": "boolean",
         "description": "Enable write tools (create_post, create_topic, update_topic). Requires apiKey. Default: false."
       },
+      "signature": {
+        "type": "string",
+        "description": "Signature appended to all AI-generated posts and topics. Default: '*This content was written by AI.*'"
+      },
       "requestTimeoutMs": {
         "type": "number",
         "description": "HTTP request timeout in milliseconds (default: 15000)"
@@ -62,6 +66,11 @@
     "allowWrites": {
       "label": "Enable Write Tools",
       "help": "Allow create_post, create_topic, and update_topic. Requires an API key."
+    },
+    "signature": {
+      "label": "AI Signature",
+      "placeholder": "*This content was written by AI.*",
+      "help": "Appended to all AI-generated posts and topics so readers know the content is AI-authored."
     },
     "requestTimeoutMs": {
       "label": "Request Timeout (ms)",

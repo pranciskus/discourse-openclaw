@@ -5,7 +5,9 @@
  * Discourse forum topics and posts. Uses the Discourse REST API directly.
  *
  * Read tools work on any public forum. Write tools require an API key
- * and the `allowWrites` config flag.
+ * and the `allowWrites` config flag. A `discourse_site_rules` tool is
+ * always registered — it fetches the site's llms.txt on demand so the
+ * LLM can check the policy before writing.
  */
 
 import { resolveConfig, type PluginApi } from "./config.js";
@@ -26,6 +28,7 @@ import { registerGetTags } from "./tools/get-tags.js";
 import { registerCreatePost } from "./tools/create-post.js";
 import { registerCreateTopic } from "./tools/create-topic.js";
 import { registerUpdateTopic } from "./tools/update-topic.js";
+import { registerSiteRules } from "./tools/site-rules.js";
 
 export default function register(api: PluginApi) {
   const cfg = resolveConfig(api);
@@ -47,6 +50,9 @@ export default function register(api: PluginApi) {
   registerListUserPosts(api, client, cfg);
   registerGetCategories(api, client, cfg);
   registerGetTags(api, client, cfg);
+
+  // Always register site rules so the LLM can check the policy
+  registerSiteRules(api, cfg);
 
   // Conditionally register write tools
   if (cfg.allowWrites) {

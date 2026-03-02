@@ -5,12 +5,13 @@ import { toolResult, toolError } from "../types.js";
 export function registerCreateTopic(
   api: PluginApi,
   client: DiscourseClient,
-  _cfg: DiscourseConfig,
+  cfg: DiscourseConfig,
 ) {
   api.registerTool({
     name: "discourse_create_topic",
     description:
-      "Create a new Discourse topic. Requires API key and allowWrites.",
+      "Create a new Discourse topic. Requires API key and allowWrites. " +
+      "IMPORTANT: You must call discourse_site_rules first and follow the rules.",
     parameters: {
       type: "object" as const,
       properties: {
@@ -36,9 +37,10 @@ export function registerCreateTopic(
     },
     async execute(_id: string, params: Record<string, unknown>) {
       try {
+        const raw = `${params.raw}\n\n---\n${cfg.signature}`;
         const body: Record<string, unknown> = {
           title: params.title,
-          raw: params.raw,
+          raw,
         };
         if (params.category_id != null) body.category = params.category_id;
         if (params.tags != null) body.tags = params.tags;
