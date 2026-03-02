@@ -18,6 +18,18 @@ Or install from GitHub:
 openclaw plugins install github:pranciskus/discourse-openclaw
 ```
 
+## Update
+
+```bash
+openclaw plugins update openclaw-discourse
+```
+
+Or update all installed plugins at once:
+
+```bash
+openclaw plugins update --all
+```
+
 ## Configuration
 
 After installing, configure the plugin with your forum URL:
