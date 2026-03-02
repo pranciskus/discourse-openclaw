@@ -26,7 +26,7 @@ openclaw plugins update openclaw-discourse
 
 ## Configuration
 
-After installing, configure the plugin with your forum URL:
+After installing, configure the plugin with your forum URL and restart the gateway:
 
 ```bash
 openclaw config set plugins.entries.openclaw-discourse.config.siteUrl "https://meta.discourse.org"
@@ -38,6 +38,8 @@ For authenticated access (private categories, write tools):
 openclaw config set plugins.entries.openclaw-discourse.config.apiKey "your-discourse-api-key"
 openclaw config set plugins.entries.openclaw-discourse.config.allowWrites true
 ```
+
+Restart the gateway after changing config for changes to take effect.
 
 Or edit `openclaw.json` directly:
 
